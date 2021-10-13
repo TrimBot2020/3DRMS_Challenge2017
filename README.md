@@ -1,1 +1,3 @@
-# 3DRMS_Challenge2017
+# 3DRMS Challenge2017
+
+Dataset move in progress
