@@ -1,0 +1,1934 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{iccv}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\iccvfinalcopy % *** Uncomment this line for the final submission
+
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 2
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+3D Reconstruction Meets Semantics – Reconstruction Challenge
+\end_layout
+
+\begin_layout Author
+Torsten Sattler, Radim Tylecek, Thomas Brox, Marc Pollefeys, Robert B.
+ Fisher 
+\end_layout
+
+\begin_layout Abstract
+Part of the workshop is a challenge on combining 3D and semantic information
+ in complex scenes.
+ To this end, a challenging outdoor dataset, captured by a robot driving
+ through a semantically-rich garden that contains fine geometric details,
+ was released.
+ A multi-camera rig is mounted on top of the robot, enabling the use of
+ both stereo and motion stereo information.
+ Precise ground truth for the 3D structure of the garden has been obtained
+ with a laser scanner and accurate pose estimates for the robot are available
+ as well.
+ Ground truth semantic labels and ground truth depth from a laser scan are
+ used for benchmarking the quality of the 3D reconstructions.
+\end_layout
+
+\begin_layout Section
+Description
+\end_layout
+
+\begin_layout Standard
+Given a set of images and their known camera poses, the goal of the challenge
+ is to create a semantically annotated 3D model of the scene.
+ To this end, it will be necessary to compute depth maps for the images
+ and then fuse them together (potentially while incorporating information
+ from the semantics) into a single 3D model.
+\end_layout
+
+\begin_layout Standard
+We have provided the following data for the challenge
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://trimbot2020.webhosting.rug.nl/events/3drms/challenge
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Itemize
+A set of 
+\series bold
+training
+\series default
+ sequences consisting of 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+calibrated images with their camera poses, 
+\end_layout
+
+\begin_layout Itemize
+ground truth semantic annotations for a subset of these images, 
+\end_layout
+
+\begin_layout Itemize
+a semantically annotated 3D point cloud depicting the area of the training
+ sequence.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+A 
+\series bold
+testing
+\series default
+ sequence consisting of calibrated images with their camera poses.
+\end_layout
+
+\begin_layout Standard
+Both training and testing data are available from the git repository 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017
+\end_layout
+
+\end_inset
+
+, where also details on the file formats can be found.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename wur-pcl-zjet.png
+	lyxscale 33
+	width 45text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Point cloud of the entire garden (height-colored).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:leica-pcl"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Garden Dataset
+\end_layout
+
+\begin_layout Standard
+The dataset for the the 3DRMS challenge was collected in a test garden at
+ Wageningen University Research Campus, Netherlands, which was built specificall
+y for experimentation in robotic gardening.
+\end_layout
+
+\begin_layout Standard
+Four scenarios of robot driving around different parts of the garden (Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:gt-trajectories"
+
+\end_inset
+
+) were used: 
+\family typewriter
+around_hedge (17), boxwood_row (57), boxwood_slope (23) 
+\family default
+and
+\family typewriter
+ around_garden (124)
+\family default
+.
+ The first three were designated entirely for training, the last one was
+ split between testing and training (
+\family typewriter
+around_garden_roses
+\family default
+ 
+\family typewriter
+(11)
+\family default
+).
+ The numbers in brackets indicate the sequence length in frames.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename gt-trajectories.png
+	lyxscale 33
+	width 45text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Trajectories of the captured scenarios, training (yellow) and test (purple)
+ sequences.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:gt-trajectories"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Calibrated Images
+\end_layout
+
+\begin_layout Standard
+Image streams from four cameras (0,1,2,3) were provided.
+ Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:cam-setup"
+
+\end_inset
+
+ shows these are mounted in a pairwise setup, the pair 0-1 is oriented to
+ the front and the pair 2-3 to the right side of the robot vehicle.
+ Resolution of the images is 752x480 (WVGA), cameras 0 and 2 are color while
+ cameras 1 and 3 are greyscale (but sharper).
+ All images were undistorted with the intrinsic camera parameters
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Calibration was performed with Kalibr toolbox, 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/ethz-asl/kalibr
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The camera poses were estimated with COLMAP
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schoenberger2016sfm"
+
+\end_inset
+
+ and manually aligned to the coordinate system of the laser point cloud.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename cam_integration.jpg
+	lyxscale 33
+	width 40text%
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename cam_setup_3.png
+	lyxscale 22
+	width 40text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Pentagonal camera rig mounted on the robot (left).
+ First four cameras were included in the challenge data (right, green).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:cam-setup"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Semantic Image Annotations
+\end_layout
+
+\begin_layout Standard
+\noindent
+The set of classes we distinguish in the images contains 9 labels (color
+ code in brackets):
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Grass (light green)
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Ground (brown)
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Pavement (grey)
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Hedge (ochre) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Topiary (cyan)
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Rose (red)
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Obstacle (blue) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Tree (dark green) 
+\end_layout
+
+\begin_layout Itemize
+\noindent
+Background (black)
+\end_layout
+
+\begin_layout Standard
+Manual pixel-wise annotations (Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:gt-images"
+
+\end_inset
+
+) are provided for frames in cameras 0 and 2.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename uvc_camera_cam_0_f00140_undist.png
+	lyxscale 33
+	width 40text%
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename uvc_camera_cam_0_f00140_gtr.png
+	lyxscale 22
+	width 40text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Undistorted image from camera 0 (left) and its semantic annotation (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:gt-images"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Semantic Point Cloud
+\end_layout
+
+\begin_layout Standard
+The geometry of the scene was acquired by 
+\emph on
+Leica ScanStation P15
+\emph default
+, accuracy of 3 mm at 40 m.
+ Its native output merged from 20 individual scans (Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:leica-pcl"
+
+\end_inset
+
+) was subsampled with a spatial filter to achieve a minimal distance between
+ two points of 10 mm, which becomes the effective accuracy of the GT.
+ In some dynamic parts, like leaves and branches, the accuracy can be further
+ reduced due to the movement in the wind etc.
+\end_layout
+
+\begin_layout Standard
+Semantic labels were assigned to the points with multiple 3D bounding boxes
+ drawn around individual components of the point cloud belonging to the
+ garden objects or terrain.
+ Ultimately the point cloud was split into segments corresponding to train
+ and test sequences as shown in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pcl-sem"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename gt-train.png
+	lyxscale 33
+	width 45text%
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename gt-test-iso.png
+	lyxscale 33
+	width 45text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Semantic point cloud of the entire garden with color-coded object classes.
+ Left: 4 training parts.
+ Right: test part.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pcl-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Evaluation
+\end_layout
+
+\begin_layout Standard
+We have evaluated the quality of the 3D meshes based on the 
+\emph on
+completeness
+\emph default
+ of the reconstruction, i.e., how much of the ground truth is covered, the
+ 
+\emph on
+accuracy
+\emph default
+ of the reconstruction, i.e., how accurately the 3D mesh models the scene,
+ and the 
+\emph on
+semantic quality
+\emph default
+ of the mesh, i.e., how close the semantics of the mesh are to the ground
+ truth.
+\end_layout
+
+\begin_layout Standard
+In addition to the submitted results we have also compared to current state-of-t
+he-art methods in both reconstruction
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schoenberger2016sfm"
+
+\end_inset
+
+ and classification
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "badrinarayanan2017segnet"
+
+\end_inset
+
+ tasks.
+ 
+\end_layout
+
+\begin_layout Subsection
+3D Geometry Reconstruction
+\end_layout
+
+\begin_layout Standard
+We have followed the usual evaluation methodology described in
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "seitz2006mvs"
+
+\end_inset
+
+.
+ In particular, 
+\emph on
+accuracy
+\emph default
+ is distance 
+\begin_inset Formula $d$
+\end_inset
+
+ (in m) such that 90% of the reconstruction is within 
+\begin_inset Formula $d$
+\end_inset
+
+ of the ground truth mesh and 
+\emph on
+completeness
+\emph default
+ is the percent of points in the GT point cloud that are within 5 cm of
+ the reconstruction.
+\end_layout
+
+\begin_layout Standard
+The distances between the reconstruction and GT are calculated with point-to-mes
+h metric for completeness and vertex-to-point for accuracy.
+ The faces of submitted meshes were subdivided to have a same maximum edge
+ length.
+ The difference between the evaluated results observed in Figures
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-taguchi"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-moras"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-colmap"
+
+\end_inset
+
+, which all use the same color scale for accuracy or completeness.
+ Cold colors indicate well reconstructed segments while hot colors indicate
+ hallucinated surface (accuracy) or missing parts (completeness).
+\end_layout
+
+\begin_layout Standard
+The evaluation was limited to the space delimited in XY by the perimeter
+ of the test area and in Z to 1 m high section above the ground, ie.
+ the tree-tops were excluded.
+ Following
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schoeps2017mvs"
+
+\end_inset
+
+ we also plot cumulative histograms of distances in
+\begin_inset space ~
+\end_inset
+
+Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-comp-acc"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/yt/yt-acc.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/yt/yt-comp.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Accuracy (left) and completeness (right) of Taguchi's reconstruction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-taguchi"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/jm/jm-acc.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/jm/jm-comp.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Accuracy (left) and completeness (right) of Moras reconstruction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-moras"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/colmap/colmap-acc.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/colmap/colmap-comp.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Accuracy (left) and completeness (right) of COLMAP reconstruction.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-colmap"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/all-acc.pdf
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/all-comp.pdf
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Accuracy and completeness of evaluated 3D reconstructions.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-comp-acc"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Semantic Classification
+\end_layout
+
+\begin_layout Standard
+The accuracy of semantic labels assigned to vertices or faces of the 3D
+ model (Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-sem-meshes"
+
+\end_inset
+
+) was evaluated by its projection to all test images with known poses.
+ Only the pixels corresponding to the 3D test part (as specified in the
+ previous section) were considered, the rest of the image wast masked out
+ and ignored, as in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-gt-sem"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Visual comparison of the results in a selected frame is given in Figures
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-taguchi-sem"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-moras-sem"
+
+\end_inset
+
+,
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-uva-sem"
+
+\end_inset
+
+.
+ In the error mask the red pixels indicate incorrectly classified pixels,
+ grey were correct and black were not evaluated.
+ Quantitative results are presented by confusion matrices for all images
+ in the test set in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-sem"
+
+\end_inset
+
+, where semantic accuracy is the ratio of correctly predicted pixels across
+ all test images.
+\end_layout
+
+\begin_layout Standard
+For comparison with the 2D state-of-the-art a SegNet architecture
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "badrinarayanan2017segnet"
+
+\end_inset
+
+ is adapted for given garden semantics.
+ The network was trained on 20k synthetic garden images and then fine-tuned
+ with the challenge training set.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename sem-gt.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/testing/test_around_garden/uvc_camera_cam_0/uvc_camera_cam_0_f00910_undist.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Masked GT annotation (left) of a sample test frame (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-gt-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename sem-yt.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename sem-yt-err.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Projection of Taguchi's reconstruction (left) and its error mask (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-taguchi-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename sem-jm.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename sem-jm-err.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Projection of Moras reconstruction (left) and its error mask (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-moras-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename sem-uva.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename sem-uva-err.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+SegNet classification (left) and its error mask (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-uva-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/yt/yt-mesh.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/jm/jm-mesh.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Semantic mesh of Taguchi (left) and Moras (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-sem-meshes"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/yt-confmat.pdf
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/jm-confmat.pdf
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Confusion matrices for submissions of Taguchi (left) and Moras (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-sem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /home/radim/TrimBot/Challenge2017/evaluation/submissions/uva-full-confmat.pdf
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\begin_inset space \hspace{}
+\length 5mm
+\end_inset
+
+
+\begin_inset Graphics
+	filename gt-sem.png
+	lyxscale 33
+	width 40text%
+	clip
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Confusion matrices for SegNet (left) and the test section of GT model (right).
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:results-sem-gt"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Results
+\end_layout
+
+\begin_layout Standard
+The quantitative comparison in all three performance categories is given
+ in the following table: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Method
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Accuracy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Completeness
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+Semantic
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Taguchi
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "taguchi2017rms"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+0.101 m
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+71.1 %
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+82.2 %
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Moras
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Guerry2017snapnet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.198 m
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+83.3 %
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+69.3 %
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Baseline
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schoenberger2016sfm,badrinarayanan2017segnet"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+0.022 m
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+85.3 %
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\emph on
+82.2 %
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparison of submitted results with baselines.
+ Semantic quality is the ratio of correctly predicted pixels in the test
+ part of images.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:results"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The baseline Structure-from-Motion method
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schoenberger2016sfm"
+
+\end_inset
+
+ outperformed the challenge participants by large margin in accuracy while
+ obtaining a similar completeness as Moras
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Guerry2017snapnet"
+
+\end_inset
+
+.
+ The method of Moras achieves that completeness level only at the cost of
+ significantly lower accuracy, what corresponds to the large ratio of hallucinat
+ed surfaces visible in the reconstruction result.
+\end_layout
+
+\begin_layout Standard
+Compared to that the method of Taguchi
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "taguchi2017rms"
+
+\end_inset
+
+ appears to be rather conservative, with less complete but semantically
+ more consistent mesh, as observed in Fig.
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:results-sem-meshes"
+
+\end_inset
+
+, resulting in the same performance as deep convolutional network
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "badrinarayanan2017segnet"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+In summary the workshop challenge competitors did not yet fully leverage
+ the joint semantic & 3D information, as both independent 2D and 3D baseline
+ methods we compared with perform so far the same or better in quantitative
+ terms.
+\end_layout
+
+\begin_layout Subsection*
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+The garden dataset was prepared within EU project TrimBot2020.
+ The semantic baseline results were provided by Hoang-An Le (University
+ of Amsterdam).
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "rms"
+options "plain"
+
+\end_inset
+
+
+\begin_inset VSpace vfill
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
