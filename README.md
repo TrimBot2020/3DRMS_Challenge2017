@@ -1,6 +1,6 @@
 # 3D Reconstruction meets Semantics 
 
-Part of the ICCV 2017 workshop [3D Reconstruction meets Semantics](http://trimbot2020.webhosting.rug.nl/events/3drms/) is a challenge on combining 3D and semantic information in complex scenes. 
+Part of the ICCV 2017 workshop [3D Reconstruction meets Semantics](http://trimbot2020.webhosting.rug.nl/events/3drms/) was a challenge on combining 3D and semantic information in complex scenes. 
 To this end, a challenging outdoor dataset, captured by a robot driving through a semantically-rich garden that contains fine geometric details, is released. 
 A multi-camera rig is mounted on top of the robot, enabling the use of both stereo and motion stereo information. 
 Precise ground truth for the 3D structure of the garden has been obtained with a laser scanner and accurate pose estimates for the robot are available as well. 
@@ -22,13 +22,12 @@ Labels are only provided for the colour cameras, while the greyscale cameras are
 
 ## Data
 
-_IMPORTANT_: Please install [git lfs](https://git-lfs.github.com/) before cloning this repository to retrieve PLY files.
+Challenge dataset archives are hosted are hosted [here](https://homepages.inf.ed.ac.uk/rbf/TrimBot2020git/public/).
+Please use [`download.sh`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/download.sh) script to retrieve training and test data (or see the script for manual download steps).
 
-_NOTE_: Due to bug in Gitlab server valid PLY files are not downloaded with ZIP web link. You can still download them via web individually.
-
-* File [`labels.yaml`](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/calibration/labels.yaml) - semantic label definition list
-* File [`colors.yaml`](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/calibration/colors.yaml) - label color definition (for display)
-* File [`calibration/camchain-DDDD.yaml`](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/calibration/camchain-2017-05-16-09-53-50.yaml) - camera rig calibration
+* File [`labels.yaml`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/calibration/labels.yaml) - semantic label definition list
+* File [`colors.yaml`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/calibration/colors.yaml) - label color definition (for display)
+* File [`calibration/camchain-DDDD.yaml`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/calibration/camchain-2017-05-16-09-53-50.yaml) - camera rig calibration
 
 
 ### Training
@@ -73,7 +72,7 @@ We evaluate the following measures:
 We use distance thresholds from 1 to 30 cm. 
 
 The evaluation code and GT can be found [here](evaluation).
-The methodology and performance is given in a [report](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/evaluation/report/rms_challenge.pdf).
+The methodology and performance is given in a [report](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/evaluation/report/rms_challenge.pdf).
 
 #### References
 
@@ -84,21 +83,21 @@ The methodology and performance is given in a [report](https://gitlab.inf.ed.ac.
 
 In order to submit to the challenge, please create a semantically annotated 3D triangle mesh from the test sequence. 
 * The mesh should be stored in the [PLY text format](http://paulbourke.net/dataformats/ply/). 
-* The file should store for each triangle a color corresponding to the triangle’s semantic class (see the [`calibrations/colors.yaml`](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/calibration/colors.yaml) file for the mapping between semantic classes and colors). 
+* The file should store for each triangle a color corresponding to the triangle’s semantic class (see the [`calibrations/colors.yaml`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/calibration/colors.yaml) file for the mapping between semantic classes and colors). 
   * Semantic labels 'Unknown' and 'Background' are only for 2D images, and should not be present in the submitted 3D mesh, ie. only values 1-8 are valid.
 
 Once you have created the mesh, please submit it using [this link](https://www.dropbox.com/request/23XzljBTn93zYl3ETjXn). 
-In addition, please send an email to `torsten.sattler@inf.ethz.ch` that includes the filename of the file you submitted as well as contact information.
+In addition, please send an email to `torsten.sattler@cvut.cz` that includes the filename of the file you submitted as well as contact information.
 
 ## Questions
 
-For questions, please contact `torsten.sattler@inf.ethz.ch`.
+For questions, please contact `torsten.sattler@cvut.cz`.
 
 ## Credits
 
-Dataset composed by @tsattler and @rtylecek.
+Dataset composed by T.Sattler and R.Tylecek.
 
-Data recorded and processed by @dhonegger and @mblaich.
+Data recorded and processed by D.Honegger and M.Blaich.
 
 ### Annotators:
 * Christos Maniatis
@@ -108,13 +107,13 @@ Data recorded and processed by @dhonegger and @mblaich.
 * Xinda Xu
 * Omar Abarca Arriaga
 
-Please report any errors via [issue tracker](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/issues/new) or via email to torsten.sattler@inf.ethz.ch.
+Please report any errors via [issue tracker](https://github.com/TrimBot2020/3DRMS_Challenge2017/issues/new) or via email to torsten.sattler@cvut.cz.
 
 ### Acknowledgements
 
 Production of this dataset was supported by EU project TrimBot2020.
 
-Please cite the following [report](https://gitlab.inf.ed.ac.uk/3DRMS/Challenge2017/blob/master/evaluation/report/rms_challenge.pdf) when using the dataset: 
+Please cite the following [report](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/evaluation/report/rms_challenge.pdf) when using the dataset: 
 
 
     @techreport{sattler2017rms,
