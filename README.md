@@ -22,7 +22,7 @@ Labels are only provided for the colour cameras, while the greyscale cameras are
 
 ## Data
 
-Challenge dataset archives are hosted are hosted [here](https://homepages.inf.ed.ac.uk/rbf/TrimBot2020git/public/).
+Challenge dataset archives are hosted [here](https://homepages.inf.ed.ac.uk/rbf/TrimBot2020git/public/).
 Please use [`download.sh`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/download.sh) script to retrieve training and test data (or see the script for manual download steps).
 
 * File [`labels.yaml`](https://github.com/TrimBot2020/3DRMS_Challenge2017/blob/master/calibration/labels.yaml) - semantic label definition list
